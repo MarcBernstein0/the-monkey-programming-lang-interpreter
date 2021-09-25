@@ -34,3 +34,16 @@ const ( // might be able to do this with iotas
 	FUNCTION = "FUNCTION"
 	LET      = "LET"
 )
+
+var keywords = map[string]TokenType{
+	"fn":  FUNCTION,
+	"let": LET,
+}
+
+// check if ident is a keyword or not
+func LookupIdent(ident string) TokenType {
+	if toke, ok := keywords[ident]; ok {
+		return toke
+	}
+	return IDENT
+}

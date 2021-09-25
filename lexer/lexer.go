@@ -16,6 +16,7 @@ type Lexer struct {
 	ch      byte // current char being looked at
 }
 
+// create new Lexer
 func New(input string) *Lexer {
 	l := &Lexer{input: input}
 
@@ -24,6 +25,7 @@ func New(input string) *Lexer {
 	return l
 }
 
+// read next character in program
 func (l *Lexer) readChar() {
 	if l.readPos >= len(l.input) {
 		l.ch = 0
@@ -35,39 +37,85 @@ func (l *Lexer) readChar() {
 	l.readPos += 1
 }
 
+// read entire string until non valid identifier character
+func (l *Lexer) readIdentifier() string {
+	position := l.pos
+	for isLetter(l.ch) {
+		l.readChar()
+	}
+
+	return l.input[position:l.pos]
+}
+
+// skip whitespace
+func (l *Lexer) skipWhitespace() {
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+		l.readChar()
+	}
+
+}
+
+// generates the next token in the lexer
 func (l *Lexer) NextToken() token.Token {
-	var toke token.Token
+	var tokeType token.TokenType
+	var tokeLiteral string
+
+	l.skipWhitespace()
 
 	// switch case based on what the character is
 	switch l.ch {
 	case '=':
-		toke = newToken(token.ASSIGN, l.ch)
+		tokeType, tokeLiteral = token.ASSIGN, string(l.ch)
 	case '+':
-		toke = newToken(token.PLUS, l.ch)
+		tokeType, tokeLiteral = token.PLUS, string(l.ch)
 	case '(':
-		toke = newToken(token.LPAREN, l.ch)
+		tokeType, tokeLiteral = token.LPAREN, string(l.ch)
 	case ')':
-		toke = newToken(token.RPAREN, l.ch)
+		tokeType, tokeLiteral = token.RPAREN, string(l.ch)
 	case '{':
-		toke = newToken(token.LBRACE, l.ch)
+		tokeType, tokeLiteral = token.LBRACE, string(l.ch)
 	case '}':
-		toke = newToken(token.RBRACE, l.ch)
+		tokeType, tokeLiteral = token.RBRACE, string(l.ch)
 	case ',':
-		toke = newToken(token.COMMA, l.ch)
+		tokeType, tokeLiteral = token.COMMA, string(l.ch)
 	case ';':
-		toke = newToken(token.SEMICOLON, l.ch)
+		tokeType, tokeLiteral = token.SEMICOLON, string(l.ch)
 	case 0:
-		toke = newToken(token.EOF, 0) // zero is empty character as '' is an illegal rune literal
+		tokeType, tokeLiteral = token.EOF, "" // zero is empty character as '' is an illegal rune literal
+	default:
+		// return in default as to not stop at the space then skip the character by accident
+		if isLetter(l.ch) {
+			tokeLiteral = l.readIdentifier()
+			tokeType = token.LookupIdent(tokeLiteral)
+
+		} else {
+			tokeType, tokeLiteral = token.ILLEGAL, string(l.ch)
+
+		}
+		toke := newToken(tokeType, tokeLiteral)
+		fmt.Printf("Token: %+v\n", toke)
+
+		return toke
+
 	}
+
+	toke := newToken(tokeType, tokeLiteral)
 	fmt.Printf("Token: %+v\n", toke)
 
 	l.readChar()
 	return toke
 }
 
-func newToken(tokenType token.TokenType, literal byte) token.Token {
+// generates new token struct
+func newToken(tokenType token.TokenType, literal string) token.Token {
 	return token.Token{
 		Type:    tokenType,
-		Literal: string(literal),
+		Literal: literal,
 	}
+}
+
+// checks if character is valid for identifiers and keywords
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+
 }
