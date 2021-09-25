@@ -53,7 +53,7 @@ func TestNextTokenBasicCode(t *testing.T) {
 	let add = fn(x,y){
 		x + y;
 	};
-	let result = add(five, tent);`
+	let result = add(five, ten);`
 
 	tests := []struct {
 		expectedType    token.TokenType
@@ -78,7 +78,7 @@ func TestNextTokenBasicCode(t *testing.T) {
 		{token.COMMA, ","},
 		{token.IDENT, "y"},
 		{token.RPAREN, ")"},
-		{token.RBRACE, "{"},
+		{token.LBRACE, "{"},
 		{token.IDENT, "x"},
 		{token.PLUS, "+"},
 		{token.IDENT, "y"},
@@ -87,6 +87,7 @@ func TestNextTokenBasicCode(t *testing.T) {
 		{token.SEMICOLON, ";"},
 		{token.LET, "let"},
 		{token.IDENT, "result"},
+		{token.ASSIGN, "="},
 		{token.IDENT, "add"},
 		{token.LPAREN, "("},
 		{token.IDENT, "five"},
