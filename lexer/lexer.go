@@ -2,8 +2,6 @@
 package lexer
 
 import (
-	"fmt"
-
 	"github.com/MarcBernstein0/the-monkey-programming-lang-interpreter/token"
 )
 
@@ -37,10 +35,11 @@ func (l *Lexer) readChar() {
 	l.readPos += 1
 }
 
-// read entire string until non valid identifier character
-func (l *Lexer) readIdentifier() string {
+// read entire string until non valid character
+// function being passed in checks if given character is valid in monkey
+func (l *Lexer) readCharacter(fn func(byte) bool) string {
 	position := l.pos
-	for isLetter(l.ch) {
+	for fn(l.ch) {
 		l.readChar()
 	}
 
@@ -85,22 +84,23 @@ func (l *Lexer) NextToken() token.Token {
 	default:
 		// return in default as to not stop at the space then skip the character by accident
 		if isLetter(l.ch) {
-			tokeLiteral = l.readIdentifier()
+			tokeLiteral = l.readCharacter(isLetter)
 			tokeType = token.LookupIdent(tokeLiteral)
 
+		} else if isDigit(l.ch) {
+			tokeType = token.INT
+			tokeLiteral = l.readCharacter(isDigit)
 		} else {
 			tokeType, tokeLiteral = token.ILLEGAL, string(l.ch)
 
 		}
 		toke := newToken(tokeType, tokeLiteral)
-		fmt.Printf("Token: %+v\n", toke)
 
 		return toke
 
 	}
 
 	toke := newToken(tokeType, tokeLiteral)
-	fmt.Printf("Token: %+v\n", toke)
 
 	l.readChar()
 	return toke
@@ -118,4 +118,9 @@ func newToken(tokenType token.TokenType, literal string) token.Token {
 func isLetter(ch byte) bool {
 	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
 
+}
+
+// checks if character is valid integer
+func isDigit(ch byte) bool {
+	return '0' <= ch && ch <= '9'
 }
