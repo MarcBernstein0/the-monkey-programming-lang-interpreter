@@ -51,7 +51,15 @@ func (l *Lexer) skipWhitespace() {
 	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.readChar()
 	}
+}
 
+// peek at next character to see if there is a token with 2 characters
+func (l *Lexer) peekChar() byte {
+	if l.readPos >= len(l.input) {
+		return 0
+	} else {
+		return l.input[l.readPos]
+	}
 }
 
 // generates the next token in the lexer
@@ -64,13 +72,28 @@ func (l *Lexer) NextToken() token.Token {
 	// switch case based on what the character is
 	switch l.ch {
 	case '=':
-		tokeType, tokeLiteral = token.ASSIGN, string(l.ch)
+		// TODO: abstrack peek and add two characters
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tokeType = token.EQ
+			tokeLiteral = string(ch) + string(l.ch)
+		} else {
+			tokeType, tokeLiteral = token.ASSIGN, string(l.ch)
+		}
 	case '+':
 		tokeType, tokeLiteral = token.PLUS, string(l.ch)
 	case '-':
 		tokeType, tokeLiteral = token.MINUS, string(l.ch)
 	case '!':
-		tokeType, tokeLiteral = token.BANG, string(l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tokeType = token.NOT_EQ
+			tokeLiteral = string(ch) + string(l.ch)
+		} else {
+			tokeType, tokeLiteral = token.BANG, string(l.ch)
+		}
 	case '*':
 		tokeType, tokeLiteral = token.ASTERISK, string(l.ch)
 	case '/':
@@ -88,9 +111,23 @@ func (l *Lexer) NextToken() token.Token {
 	case ';':
 		tokeType, tokeLiteral = token.SEMICOLON, string(l.ch)
 	case '<':
-		tokeType, tokeLiteral = token.LT, string(l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tokeType = token.LEQ
+			tokeLiteral = string(ch) + string(l.ch)
+		} else {
+			tokeType, tokeLiteral = token.LT, string(l.ch)
+		}
 	case '>':
-		tokeType, tokeLiteral = token.GT, string(l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tokeType = token.GEQ
+			tokeLiteral = string(ch) + string(l.ch)
+		} else {
+			tokeType, tokeLiteral = token.GT, string(l.ch)
+		}
 	case 0:
 		tokeType, tokeLiteral = token.EOF, "" // zero is empty character as '' is an illegal rune literal
 	default:
