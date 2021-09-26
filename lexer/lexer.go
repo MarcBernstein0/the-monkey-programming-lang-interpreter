@@ -67,6 +67,14 @@ func (l *Lexer) NextToken() token.Token {
 		tokeType, tokeLiteral = token.ASSIGN, string(l.ch)
 	case '+':
 		tokeType, tokeLiteral = token.PLUS, string(l.ch)
+	case '-':
+		tokeType, tokeLiteral = token.MINUS, string(l.ch)
+	case '!':
+		tokeType, tokeLiteral = token.BANG, string(l.ch)
+	case '*':
+		tokeType, tokeLiteral = token.ASTERISK, string(l.ch)
+	case '/':
+		tokeType, tokeLiteral = token.SLASH, string(l.ch)
 	case '(':
 		tokeType, tokeLiteral = token.LPAREN, string(l.ch)
 	case ')':
@@ -79,6 +87,10 @@ func (l *Lexer) NextToken() token.Token {
 		tokeType, tokeLiteral = token.COMMA, string(l.ch)
 	case ';':
 		tokeType, tokeLiteral = token.SEMICOLON, string(l.ch)
+	case '<':
+		tokeType, tokeLiteral = token.LT, string(l.ch)
+	case '>':
+		tokeType, tokeLiteral = token.GT, string(l.ch)
 	case 0:
 		tokeType, tokeLiteral = token.EOF, "" // zero is empty character as '' is an illegal rune literal
 	default:
@@ -121,6 +133,7 @@ func isLetter(ch byte) bool {
 }
 
 // checks if character is valid integer
+// TODO: add support for floats, hex notation and/or binary
 func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
 }

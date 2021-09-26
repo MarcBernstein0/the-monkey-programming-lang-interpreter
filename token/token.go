@@ -18,8 +18,20 @@ const ( // might be able to do this with iotas
 	INT   = "INT"   // integer
 
 	// opterators
-	ASSIGN = "="
-	PLUS   = "+"
+	ASSIGN   = "="
+	PLUS     = "+"
+	MINUS    = "-"
+	BANG     = "!"
+	ASTERISK = "*"
+	SLASH    = "/"
+
+	LT  = "<"
+	LEQ = "<="
+	GT  = ">"
+	GEQ = ">="
+
+	EQ     = "=="
+	NOT_EQ = "!="
 
 	// Delimiters
 	COMMA     = ","
