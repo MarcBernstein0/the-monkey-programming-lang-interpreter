@@ -1,4 +1,4 @@
-package paser
+package parser
 
 import (
 	"github.com/MarcBernstein0/the-monkey-programming-lang-interpreter/ast"
