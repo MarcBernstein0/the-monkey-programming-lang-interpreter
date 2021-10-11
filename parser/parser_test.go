@@ -1,11 +1,11 @@
 package parser
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/MarcBernstein0/the-monkey-programming-lang-interpreter/ast"
 	"github.com/MarcBernstein0/the-monkey-programming-lang-interpreter/lexer"
-	"github.com/MarcBernstein0/the-monkey-programming-lang-interpreter/token"
 )
 
 func TestLetStatements(t *testing.T) {
@@ -17,7 +17,12 @@ func TestLetStatements(t *testing.T) {
 	l := lexer.New(input)
 	p := New(l)
 
+	fmt.Println("lexer:", l)
+	fmt.Println("Parser:", p)
+
 	program := p.ParseProgram()
+
+	fmt.Println(program)
 
 	if program == nil {
 		t.Fatalf("ParseProgram() returned nil\n")
@@ -37,6 +42,7 @@ func TestLetStatements(t *testing.T) {
 
 	for i, tt := range tests {
 		stmt := program.Statements[i]
+		fmt.Println(stmt.TokenLiteral())
 		if !testLetStatements(t, stmt, tt.expectedIdentifier) {
 			return
 		}
@@ -45,7 +51,7 @@ func TestLetStatements(t *testing.T) {
 }
 
 func testLetStatements(t *testing.T, s ast.Statement, name string) bool {
-	if s.TokenLiteral() != token.LET {
+	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let' - got = %q", s.TokenLiteral())
 		return false
 	}
