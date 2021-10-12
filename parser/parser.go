@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/MarcBernstein0/the-monkey-programming-lang-interpreter/ast"
 	"github.com/MarcBernstein0/the-monkey-programming-lang-interpreter/lexer"
 	"github.com/MarcBernstein0/the-monkey-programming-lang-interpreter/token"
@@ -10,12 +12,15 @@ type Parser struct {
 	l         *lexer.Lexer
 	curToken  token.Token
 	peekToken token.Token
+
+	errors []string
 }
 
 // create a new parser
 func New(l *lexer.Lexer) *Parser {
 	p := &Parser{
-		l: l,
+		l:      l,
+		errors: make([]string, 0),
 	}
 
 	// Read two tokens so curToken and peekToken are both set
@@ -50,6 +55,7 @@ func (p *Parser) expectedPeek(t token.TokenType) bool {
 		p.nextToken()
 		return true
 	} else {
+		p.peekError(t)
 		return false
 	}
 }
@@ -86,12 +92,24 @@ func (p *Parser) parseLetStatment() *ast.LetStatment {
 	return stmt
 }
 
+func (p *Parser) Errors() []string {
+	return p.errors
+}
+
+func (p *Parser) peekError(t token.TokenType) {
+	msg := fmt.Sprintf("expected next token to be %s, got %s instead",
+		t,
+		p.peekToken.Type,
+	)
+	p.errors = append(p.errors, msg)
+}
+
 // parse the program
 func (p *Parser) ParseProgram() *ast.Program {
 	program := new(ast.Program)
 	program.Statements = make([]ast.Statement, 0)
 
-	for p.curToken.Type != token.EOF {
+	for !p.curTokenIs(token.EOF) {
 		stmt := p.parseStatment()
 
 		if stmt != nil {
