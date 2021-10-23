@@ -33,8 +33,14 @@ func New(l *lexer.Lexer) *Parser {
 // parse each statment
 func (p *Parser) parseStatment() ast.Statement {
 	switch p.curToken.Type {
+
+	// Parsing Let statements
 	case token.LET:
 		return p.parseLetStatment()
+
+	//Parsing Return statements
+	case token.RETURN:
+		return p.parseReturnStatment()
 	default:
 		return nil
 	}
@@ -89,6 +95,19 @@ func (p *Parser) parseLetStatment() *ast.LetStatment {
 		p.nextToken()
 	}
 
+	return stmt
+}
+
+func (p *Parser) parseReturnStatment() *ast.ReturnStatement {
+	stmt := &ast.ReturnStatement{
+		Token: p.curToken,
+	}
+	p.nextToken()
+
+	//TODO: Skipping the expressions until we encounter a semicolon
+	for !p.curTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
 	return stmt
 }
 

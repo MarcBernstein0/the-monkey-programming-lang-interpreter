@@ -91,7 +91,7 @@ func TestReturnStatements(t *testing.T) {
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 
-	if len(program.Statements) != 5 {
+	if len(program.Statements) != 3 {
 		t.Fatalf("program.Statements does not contain 3 statements, got=%d", len(program.Statements))
 	}
 	for _, stmt := range program.Statements {
